@@ -35,7 +35,7 @@ Optional flags
 - Open the html file in any browser
 
 Optional flags
-- ```--filters```: You can choose to enable filters which are specified in ```parameters/filters.json```. A filter is in the form ```COLUMN: [OPERATOR: [VALUES]],```
+- ```--filters```: You can choose to enable filters which are specified in ```parameters/filters.json```. A filter is in the form ```COLUMN: [OPERATOR, [VALUES]],```
     - ```COLUMN``` refers to the specific column in ```outputs/output.csv```
     - ```OPERATOR``` specifies the action to take and can be one of the follow:
         - ```BETWEEN```: Select all items between values (inclusive)
