@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions
 from tqdm import tqdm
-from website_attributes import update_variables
+from parameters.website_attributes import update_variables
 
 def construct_rightmove_url(base_url, variables, index=0):
     variables["index"] = index

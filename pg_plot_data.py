@@ -1,36 +1,51 @@
 import pandas as pd
 from tqdm import tqdm
-import folium
+import folium, argparse
+import json
+from os.path import exists, isdir
+from os import makedirs
 
-filters = {
-    "BEDROOMS": ["BET", [2, 10]],
-    "COUNCIL TAX": ["EXC", ["Band: F", "Band: G", "Band: H"]]
-}
-enable_filters = True
-map_name = "output"
+if not isdir("outputs"):
+    makedirs("outputs")
+
+with open("parameters/filters.json") as f:
+    filters = json.load(f)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("map_name", type=str, nargs="?", default="output", help="Name of output map")
+parser.add_argument("--filters", action="store_true", help="Optional arg to enable filters")
+args = parser.parse_args()
+
+ENABLE_FILTERS = args.filters
+MAP_NAME = args.map_name.split(".")[0]
 
 # Configure progress bars
 tqdm.pandas()
 
 # Load Data
 print("Reading spreadsheet data")
-df = pd.read_csv('output.csv')#.iloc[0:100]
+
+if not exists('outputs/output.csv'):
+    print("No spreadsheet to read data from")
+    quit()
+
+df = pd.read_csv('outputs/output.csv')#.iloc[0:100]
 df = df.fillna("")
 
 # Create Map
 print("Generating map")
 m = folium.Map(location=[df['LAT'].mean(), df['LON'].mean()], zoom_start=12)
 for _, row in df.iterrows():
-    if enable_filters:
+    if ENABLE_FILTERS:
         to_skip = False
         for detail, (action, items) in filters.items():
-            if action == "INC" and row[detail] not in items:
+            if action == "INCLUDE" and row[detail] not in items:
                 to_skip = True
                 break
-            elif action == "EXC" and row[detail] in items:
+            elif action == "EXCLUDE" and row[detail] in items:
                 to_skip = True
                 break
-            elif action == "BET" and (row[detail] < items[0] or row[detail] > items[1]):
+            elif action == "BETWEEN" and (row[detail] < items[0] or row[detail] > items[1]):
                 to_skip = True
                 break
         if to_skip:
@@ -51,4 +66,4 @@ for _, row in df.iterrows():
         location=[row['LAT'], row['LON']],
         popup=folium.Popup(popup_html, max_width=300)
     ).add_to(m)
-m.save(map_name + ".html")
+m.save(f"outputs/{MAP_NAME}.html")

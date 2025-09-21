@@ -1,0 +1,4 @@
+{
+    "BEDROOMS": ["BETWEEN", [2, 10]],
+    "COUNCIL TAX": ["EXCLUDE", ["Band: F", "Band: G", "Band: H"]]
+}

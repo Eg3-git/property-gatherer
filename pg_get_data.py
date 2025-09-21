@@ -4,8 +4,9 @@ import pandas as pd
 
 from get_property_links import get_links
 from get_property_data import scrape_multiple
-from website_attributes import RIGHTMOVE
-from os.path import exists
+from parameters.website_attributes import RIGHTMOVE
+from os.path import exists, isdir
+from os import makedirs
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_url", type=str, help="Required input url")
@@ -15,6 +16,9 @@ args = parser.parse_args()
 INPUT_URL = args.input_url
 RESCRAPE_ALL = args.rescrape
 
+if not isdir("outputs"):
+    makedirs("outputs")
+
 if not INPUT_URL:
     print("Source url not provided")
     quit()
@@ -22,8 +26,8 @@ if not INPUT_URL:
 driver = webdriver.Chrome()
 links = get_links(driver, INPUT_URL, RIGHTMOVE, max_links=None)
 
-if exists('output.csv'):
-    df = pd.read_csv('output.csv')#.iloc[0:100]
+if exists('outputs/output.csv'):
+    df = pd.read_csv('outputs/output.csv')#.iloc[0:100]
     df = df.fillna("")
 
     existing_data = []
@@ -45,7 +49,7 @@ else:
 
 unique_keys_list = list(dict.fromkeys(k for d in details for k in d.keys()))
 
-with open("output.csv", "w", newline='') as csvfile:
+with open("outputs/output.csv", "w", newline='') as csvfile:
     # Create a DictWriter object, using keys of the first dict as fieldnames
     writer = csv.DictWriter(csvfile, fieldnames=unique_keys_list)
     
